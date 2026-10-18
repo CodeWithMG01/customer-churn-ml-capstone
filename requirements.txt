@@ -1,0 +1,18 @@
+# Data manipulation
+
+pandas==3.0.6
+numpy==2.5.4
+
+# Visualization
+
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# Machine learning
+
+scikit-learn==1.9.1
+
+# Notebook environment
+
+jupyter==1.1.1
+ipykernel==7.4.0
