@@ -26,3 +26,6 @@ models/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Local dataset
+WA_Fn-UseC_-Telco-Customer-Churn.csv
