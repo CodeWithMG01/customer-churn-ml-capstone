@@ -29,3 +29,6 @@ Thumbs.db
 
 # Local dataset
 WA_Fn-UseC_-Telco-Customer-Churn.csv
+
+# Pytest cache
+.pytest_cache/
