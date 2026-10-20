@@ -14,7 +14,7 @@ The goal is to identify customers who may leave a telecommunications service and
 - **Model inputs:** 19 features, excluding `customerID` and the target
 - **Target distribution:** 73.5% non-churners and 26.5% churners
 
-The notebook expects `WA_Fn-UseC_-Telco-Customer-Churn.csv` in the project root, alongside this README. The dataset is not included in the repository; obtain it separately and follow its applicable terms of use.
+The notebook and data-loading module expect `WA_Fn-UseC_-Telco-Customer-Churn.csv` in the project root, alongside this README. The dataset is present in the local project folder but excluded from Git; obtain it separately and follow its applicable terms of use when setting up a fresh clone.
 
 ## Data preparation
 
@@ -73,17 +73,29 @@ The logistic-regression coefficients and corresponding odds ratios were examined
 
 ```text
 .
-├── .gitignore
 ├── README.md
 ├── requirements.txt
+├── WA_Fn-UseC_-Telco-Customer-Churn.csv  # local dataset; excluded from Git
+├── models/
+│   └── logistic_regression_pipeline.joblib  # local trained model; excluded from Git
 ├── notebooks/
-│   └── 01_exploratory_data_analysis.ipynb
-└── WA_Fn-UseC_-Telco-Customer-Churn.csv  # local dataset; not included in the repository
+│   └── 01_exploratory_data_analysis.ipynb  # analysis, model selection, and evaluation
+├── src/
+│   ├── __init__.py
+│   ├── data.py             # data loading and validation
+│   ├── preprocessing.py    # feature preprocessing pipeline
+│   ├── train.py            # model construction and training
+│   └── predict.py          # saved-model loading and churn predictions
+└── tests/
+    ├── test_data.py
+    └── test_model.py
 ```
+
+The dataset and trained model are ignored by Git, so they must be supplied or generated locally. `train.py` saves the model to `models/logistic_regression_pipeline.joblib` by default.
 
 ## Technologies
 
-Python, pandas, NumPy, Matplotlib, Seaborn, scikit-learn, Jupyter, Git, and GitHub.
+Python, pandas, NumPy, Matplotlib, Seaborn, scikit-learn, Jupyter, and pytest.
 
 ## Reproducibility
 
@@ -93,10 +105,9 @@ The notebook was developed in a Python virtual environment. Dependencies are pin
 
 ### Prerequisites
 
-- Python
-- Git
+- Python and Git
 - The project repository cloned locally
-- The Telco Customer Churn dataset downloaded separately
+- The Telco Customer Churn dataset in the project root (download separately)
 
 Open PowerShell in the project root and run:
 
@@ -127,13 +138,37 @@ Place `WA_Fn-UseC_-Telco-Customer-Churn.csv` in the project root, alongside this
 
 Open `notebooks/01_exploratory_data_analysis.ipynb` in VS Code, select the `Python (Customer Churn ML)` kernel, and run the notebook cells in order.
 
+### Train and use the model from Python
+
+The reusable modules can train the pipeline and save it to the default model path:
+
+```powershell
+python -c "from src.train import train_from_csv; train_from_csv()"
+```
+
+To predict churn for a row from the dataset using the saved pipeline:
+
+```powershell
+python -c "from src.data import load_data; from src.predict import predict_churn; df = load_data(); print(predict_churn(df.drop(columns=['Churn', 'customerID']).iloc[[0]]))"
+```
+
+`predict_churn` accepts a dictionary for one customer or a pandas DataFrame with the model feature columns. It returns the churn probability, a binary prediction, and a `Yes`/`No` label. The default classification threshold is `0.30`; it can be overridden with the `threshold` argument.
+
+### Run tests
+
+From the project root, run:
+
+```powershell
+python -m pytest
+```
+
+The tests load the CSV from the project root, so the dataset must be present.
+
 ## Future improvements
 
-- Evaluate additional models and tune their hyperparameters.
-- Investigate class-imbalance strategies where justified.
-- Refine threshold selection using an explicit business-cost objective.
-- Assess model calibration and interpretability.
-- Refactor reusable modeling code into Python modules.
+- Select the classification threshold using an explicit business-cost objective.
+- Assess probability calibration and validate performance on newer or independent data.
+- Evaluate additional models and class-imbalance strategies where justified.
 
 ## Limitations
 
